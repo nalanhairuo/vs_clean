@@ -3,57 +3,60 @@
 #include <Shlwapi.h>
 #pragma comment(lib,"Shlwapi.lib")
 //#pragma comment( linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+
+//待处理文件名与扩展名
 TCHAR* szSuffix[] =
 {
-    TEXT(".suo"),
-    TEXT(".ncb"),
-    TEXT(".user"),
-    TEXT(".pdb"),
-    TEXT(".obj"),
-    TEXT("ReadMe.txt"),
-    TEXT(".aps"),
-    TEXT(".idb"),
-    TEXT("Readme.txt"),
-    TEXT(".ilk"),
-    TEXT(".plg"),
-    TEXT(".opt"),
-    TEXT(".sbr"),
-    TEXT(".pch"),
-    TEXT(".sdf"),
-    TEXT(".netmodule"),
-    TEXT(".db"),
-    TEXT(".bsc"),
-    TEXT(".old"),
-    TEXT(".o"),
-    TEXT("PREfast"),
-    TEXT("buildchk"),
-    TEXT("BuildLog"),
-    TEXT("buildfre"),
-    TEXT("prefast"),
+    _T(".suo"),
+    _T(".ncb"),
+    _T(".user"),
+    _T(".pdb"),
+    _T(".obj"),
+    _T("ReadMe.txt"),
+    _T(".aps"),
+    _T(".idb"),
+    _T("Readme.txt"),
+    _T(".ilk"),
+    _T(".plg"),
+    _T(".opt"),
+    _T(".sbr"),
+    _T(".pch"),
+    _T(".sdf"),
+    _T(".netmodule"),
+    _T(".db"),
+    _T(".bsc"),
+    _T(".old"),
+    _T(".o"),
+    _T("PREfast"),
+    _T("buildchk"),
+    _T("BuildLog"),
+    _T("buildfre"),
+    _T("prefast"),
 
 };
 
+//待处理文件夹
 TCHAR* szDir[] =
 {
-    TEXT("\\.svn"),
-    TEXT("\\debug"),
-    TEXT("\\Debug"),
-    TEXT("\\Release"),
-    TEXT("\\release"),
-    TEXT("\\ipch"),
-    TEXT("\\Bin"),
-    TEXT("\\bin"),
-    TEXT("\\Obj"),
-    TEXT("\\x64"),
-    TEXT("objchk"),
-    TEXT("objfre"),
+    _T("\\.svn"),
+    _T("\\debug"),
+    _T("\\Debug"),
+    _T("\\Release"),
+    _T("\\release"),
+    _T("\\ipch"),
+    _T("\\Bin"),
+    _T("\\bin"),
+    _T("\\Obj"),
+    _T("\\x64"),
+    _T("objchk"),
+    _T("objfre"),
 };
 
-TCHAR szLongPath[MAX_PATH] = TEXT("");//本程序所在文件夹路径
-TCHAR szLongFile[MAX_PATH] = TEXT("");//本程序自身路径
+TCHAR szLongPath[MAX_PATH] = _T("");//本程序所在文件夹路径
+TCHAR szLongFile[MAX_PATH] = _T("");//本程序自身路径
 
 //判断是不是可以删除的后缀名
-BOOL CheckSuffix(LPCTSTR lpFilePath)
+bool CheckSuffix(LPCTSTR lpFilePath)
 {
     LPCTSTR tmp = NULL;
     int i;
@@ -64,17 +67,17 @@ BOOL CheckSuffix(LPCTSTR lpFilePath)
 
         if (tmp != NULL)
         {
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 
 }
 
 //判断是不是可以删除的文件夹
 //从后面开始判断
-BOOL CheckDiretory(LPCTSTR lpDirPath)
+bool CheckDiretory(LPCTSTR lpDirPath)
 {
     LPCTSTR tmp = NULL;
     int i;
@@ -85,20 +88,20 @@ BOOL CheckDiretory(LPCTSTR lpDirPath)
 
         if (tmp != NULL)
         {
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 //删除文件夹和文件
-BOOL DelFileToRecycle(LPCTSTR lpSourceFile)
+bool DelFileToRecycle(LPCTSTR lpSourceFile)
 {
     SHFILEOPSTRUCT shFile;
     TCHAR FilepathName[MAX_PATH];
     int len = 0;
-    _stprintf_s(FilepathName, MAX_PATH, TEXT("%s"), lpSourceFile);
+    _stprintf_s(FilepathName, MAX_PATH, _T("%s"), lpSourceFile);
 
     len = lstrlen(FilepathName);
     FilepathName[len] = '\0';
@@ -112,16 +115,16 @@ BOOL DelFileToRecycle(LPCTSTR lpSourceFile)
 
     if (SHFileOperation(&shFile) != 0)
     {
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 //获取本清理程序所在的路径
 void GetSelfPath()
 {
-    TCHAR szbufPath[MAX_PATH] = TEXT("");
+    TCHAR szbufPath[MAX_PATH] = _T("");
     LPCTSTR lpTemp = NULL;
     GetModuleFileName(NULL, szbufPath, MAX_PATH);
     GetLongPathName(szbufPath, szLongPath, MAX_PATH);
@@ -133,22 +136,22 @@ void GetSelfPath()
 //搜索并且删除垃圾文件
 void SearchAndDelete(LPTSTR lpCurrentDir)
 {
-    WIN32_FIND_DATA FindFileData;
-    HANDLE hListFile;
-    TCHAR szFullPath[MAX_PATH] = TEXT("");
-    TCHAR szFilePath[MAX_PATH] = TEXT("");
+
+    TCHAR szFullPath[MAX_PATH] = _T("");
+    TCHAR szFilePath[MAX_PATH] = _T("");
     BOOL bIsRootPath = FALSE;
 
     lstrcpy(szFilePath, lpCurrentDir);
-    lstrcat(szFilePath, TEXT("\\*"));
+    lstrcat(szFilePath, _T("\\*"));
 
-    hListFile = FindFirstFile(szFilePath, &FindFileData);
+    WIN32_FIND_DATA FindFileData;
+    HANDLE hListFile = FindFirstFile(szFilePath, &FindFileData);
 
     if (hListFile != INVALID_HANDLE_VALUE)
     {
         do
         {
-            if (lstrcmp(FindFileData.cFileName, TEXT(".")) == 0 || lstrcmp(FindFileData.cFileName, TEXT("..")) == 0)
+            if (lstrcmp(FindFileData.cFileName, _T(".")) == 0 || lstrcmp(FindFileData.cFileName, _T("..")) == 0)
             {
                 continue;
             }
@@ -157,12 +160,12 @@ void SearchAndDelete(LPTSTR lpCurrentDir)
 
             if (TRUE == bIsRootPath)
             {
-                _stprintf_s(szFullPath, MAX_PATH, TEXT("%s%s"), lpCurrentDir, FindFileData.cFileName);
+                _stprintf_s(szFullPath, MAX_PATH, _T("%s%s"), lpCurrentDir, FindFileData.cFileName);
             }
 
             else
             {
-                _stprintf_s(szFullPath, MAX_PATH, TEXT("%s\\%s"), lpCurrentDir, FindFileData.cFileName);
+                _stprintf_s(szFullPath, MAX_PATH, _T("%s\\%s"), lpCurrentDir, FindFileData.cFileName);
             }
 
             if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -196,6 +199,7 @@ int main(void)
 {
     //printf("Visual Studio垃圾文件清理!");
     GetSelfPath();
+
     SearchAndDelete(szLongPath);
 
     return 0;

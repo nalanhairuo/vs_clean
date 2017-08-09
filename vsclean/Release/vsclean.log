@@ -1,1 +1,7 @@
-﻿
+﻿  vsclean.cpp
+vsclean.cpp : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  正在生成代码
+  All 12 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  vsclean.vcxproj -> D:\soucecode\Projects\vsclean\Release\vsclean.exe
+  vsclean.vcxproj -> D:\soucecode\Projects\vsclean\Release\vsclean.pdb (Full PDB)
